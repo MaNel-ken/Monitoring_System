@@ -6,15 +6,13 @@ Before setting up the monitoring system, ensure the following tools are installe
 
 - Terraform: Used to provision virtual machines (VMs).
 - VirtualBox: Hypervisor for running the VMs.
-- Add VirtualBox path in OS
+> Ensure the VirtualBox path is added to your system's environment variables.
 - Git: For cloning the repository.
 
 ## Step 1: Provision VMs using Terraform
-- Clone the Repository:
-```bash
-$ git clone https://github.com/your-repo/monitoring-system.git
-$ cd Monitoring_System
-```
+- Copy the Terraform Files:\
+Copy the main.tf file from the Terraform directory to your local machine.
+
 - Initialize and apply terrafrom configuration:
 ```bash
 $ cd terraform
@@ -26,18 +24,22 @@ $ terraform apply --auto-approve # Apply the Terraform configuration to provisio
 
 
 ## Step 2: Apply Ansible Playbooks
-- Install Ansible in the 1st VM:
+- Clone the Repository:
 ```bash
-$ cd ../ansible
+$ git clone https://github.com/your-repo/monitoring-system.git
+$ cd Monitoring_System
+```
+- Install Ansible on the 1st VM:
+```bash
+$ cd ansible
 $ ./setup_ansible.sh
 ```
-- Update the Inventory File:
+- Update the Inventory File: Modify the inventory file to include the IP address of the monitoring system VM.
 ```bash
 [DockerCompose]
-node ansible_host= ip_address_MS_VM
+node ansible_host= <ip_address_MS_VM>
 ```
-Add the IP addresses of the VMs under the [DockerCompose] section.
-- Run the Ansible playbook to install necessary packages in the other VM:
+- Run the Ansible playbook to install necessary packages on the other VM:
 ```bash
 $ ansible-playbook  package_instal_compose_node.yml -i inventory -u vagrant --ask-pass
 ```
@@ -48,26 +50,28 @@ $ ssh vagrant@monitoring_vm_ip
 ```
 - Run docker compose services:
 ```bash
-$ cd ../monitoring-system
+$ cd monitoring-system
 $ docker compose up -d
 ```
-> This command will start Prometheus, Grafana, Alertmanager, and the sample NGINX application.
+> This command will start Prometheus, Grafana, Alertmanager, and the sample NGINX server.
 
 ## Verification and Testing
-Access Grafana: Navigate to http://<monitoring_vm_ip>:3000 to access Grafana and log in with the default credentials. 
+1. Access Grafana: 
+Navigate to http://<monitoring_vm_ip>:3000 to access Grafana and log in with the default credentials (`admin`:`admin`). 
 
-View Prometheus Metrics: Visit http://<monitoring_vm_ip>:9090 to access Prometheus and explore the metrics collected.
+2. View Prometheus Metrics: 
+Visit http://<monitoring_vm_ip>:9090 to access Prometheus and explore the metrics collected and alerts configured.
 
-Test Alerts: Configure alert rules in Prometheus and verify that alerts are being sent to Alertmanager.
+3. Test Alerts: 
+Verify that alerts are being sent to Alertmanager.
 
 ## Troubleshooting
 Issue: can't ssh to the VM 
 
 Solution: Allow ssh to VMs
 - Some server providers, such as Amazon EC2 and Google Compute Engine, Vagrant disable SSH password authentication by default. 
-That is, you can only log in over SSH using public key authentication, which mean You have to add the public key manually to the remote server.
+That is, you can only log in over SSH using public key authentication, which mean You have to add the public key manually to the remote server. To enable SSH password authentication:
 
-- To enable SSH password authentication, you must SSH in as root to edit this file: /etc/ssh/sshd_config 
 ```bash
 $ sudo -i 
 ```
@@ -87,7 +91,7 @@ $ sudo service ssh restart
 Issue: Can't apply Ansible playbook\
 [ERROR]:  {"changed": false, "module_stderr": "Shared connection to localhost closed.\r\n", "module_stdout": "/bin/sh: 1: /usr/bin/python: not found\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 127}
 
-Solution: Install Python in the 2nd  VM:
+Solution: Install Python on the 2nd VM:
 ```bash
 $ sudo apt install python -y
 ```

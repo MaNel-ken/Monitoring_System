@@ -66,44 +66,69 @@ Visit http://<monitoring_vm_ip>:9090 to access Prometheus and explore the metric
 Verify that alerts are being sent to Alertmanager.
 
 ## Troubleshooting
-Issue: can't ssh to the VM 
+### Issue: Can't ssh to the VM
+**Symptoms:**
+- Unable to establish an SSH connection to the VM.
+- Receiving an "Authentication failed" error.
 
-Solution: Allow ssh to VMs
+**Cause:**
 - Some server providers, such as Amazon EC2 and Google Compute Engine, Vagrant disable SSH password authentication by default. 
-That is, you can only log in over SSH using public key authentication, which mean You have to add the public key manually to the remote server. To enable SSH password authentication:
+That is, you can only log in over SSH using public key authentication, which mean You have to add the public key manually to the remote server.
 
+**Solution:** Allow ssh to VMs
+1. Log in as root user:
 ```bash
 $ sudo -i 
 ```
-- Then, change the line 
+2. Edit the SSH configuration file:
+```bash
+$ nano /etc/ssh/sshd_config
+```
+3. Change the following lines: 
+-  `PasswordAuthentication no`    to      `PasswordAuthentication yes`
+- `#PubkeyAuthentication yes` to `PubkeyAuthentication yes`
 
-`PasswordAuthentication no`    to      `PasswordAuthentication yes`
-
-and the line 
-
-`#PubkeyAuthentication yes` to `PubkeyAuthentication yes`
-
-- After making that change, restart the SSH service by running the following command as root:
+4. Save the changes and Restart the SSH service:
 ```bash
 $ sudo service ssh restart
 ```
+---
 
-Issue: Can't apply Ansible playbook\
-[ERROR]:  {"changed": false, "module_stderr": "Shared connection to localhost closed.\r\n", "module_stdout": "/bin/sh: 1: /usr/bin/python: not found\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 127}
+### Issue: Can't apply Ansible playbook
+**Symptoms:**
+- Error message when running an Ansible playbook:  {"changed": false, "module_stderr": "Shared connection to localhost closed.\r\n", "module_stdout": "/bin/sh: 1: /usr/bin/python: not found\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 127}
 
-Solution: Install Python on the 2nd VM:
+**Cause:**
+- Python is not installed on the remote VM. Ansible relies on Python to execute tasks on the remote machine.
+
+**Solution:** Install Python on the remote VM
+1. Install python :
 ```bash
 $ sudo apt install python -y
 ```
-Issue: Docker Compose services fail to start.
+2. Re-run the Ansible playbook.
+---
+### Issue: Docker Compose services fail to start.
+**Symptoms:**
+- Docker Compose services are not running or crash immediately after starting.
 
-Solution: Check Docker logs using docker-compose logs to diagnose the issue.
+**Cause:**
+- The root cause can vary, such as misconfigured Docker Compose files, missing environment variables, or issues within the Docker images themselves.
 
-Issue: Unable to access Grafana or Prometheus.
-
-Solution: Verify that the firewall rules allow access to the required ports (3000 for Grafana, 9090 for Prometheus).
+**Solution:** Check Docker logs using docker-compose logs to diagnose the issue.
+1. Use Docker Compose to view logs and diagnose the issue:
+```bash
+$ docker-compose logs
+```
+2. Identify any error messages or issues within the logs and take appropriate action, such as correcting configuration files or resolving dependency issues.
 
 ## Customization
-Add New Services: Modify the docker-compose.yml file to include additional services or exporters as needed.
 
-Update Alert Rules: Customize alert rules in Prometheus by editing the prometheus.yml configuration file.
+### Add New Services
+To add additional services or exporters, modify the `docker-compose.yml` file.
+
+### Update Alert Rules
+Customize alert rules in Prometheus by editing the `alertrules.yml` configuration file located in the `prometheus` directory.
+
+### Add Grafana Dashboards
+To add a new Grafana dashboard, place the JSON file in the `monitoring-system-compose/grafana/dashboards/` directory.

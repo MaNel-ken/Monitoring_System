@@ -57,13 +57,49 @@ $ docker compose up -d
 
 ## Verification and Testing
 1. Access Grafana: 
-Navigate to http://<monitoring_vm_ip>:3000 to access Grafana and log in with the default credentials (`admin`:`admin`). 
+- Navigate to http://<monitoring_vm_ip>:3000 to access Grafana and log in with the default credentials (`admin`:`admin`). 
+
+![alt text]()
+
+- Once logged in, you will see two pre-configured dashboards that were mounted in the dashboard directory when the container was created.
+
+![alt text]()
 
 2. View Prometheus Metrics: 
-Visit http://<monitoring_vm_ip>:9090 to access Prometheus and explore the metrics collected and alerts configured.
+- Visit http://<monitoring_vm_ip>:9090 to access Prometheus and explore the metrics collected:
+![alt text]()
 
-3. Test Alerts: 
-Verify that alerts are being sent to Alertmanager.
+- Review the targets and alerts that have been configured.
+
+![alt text]()
+
+![alt text]()
+
+3. View Nginx webpage:
+Visit http://<monitoring_vm_ip>:80 to access Nginx webpage.
+
+![alt text]()
+
+4. Test Alerts: 
+- To test the alerting system, you can trigger an alert by stopping the NGINX instance. This will cause Prometheus to fire an alert after 1 minute and notify Alertmanager.
+
+```bash
+$ docker compose pause nginx
+```
+- Pending status of the alert:
+![alt text]()
+
+- After 1min, Firing status:
+![alt text]()
+
+- Alertmanager Receiving the Alert:
+![alt text]()
+
+- Webhook Notification:
+![alt text]()
+
+- Grafana Dashboard Update:
+![alt text]()
 
 ## Troubleshooting
 ### Issue: Can't ssh to the VM
@@ -125,10 +161,14 @@ $ docker-compose logs
 ## Customization
 
 ### Add New Services
-To add additional services or exporters, modify the `docker-compose.yml` file.
+To add additional services or exporters, modify the `docker-compose.yml` file. 
 
 ### Update Alert Rules
-Customize alert rules in Prometheus by editing the `alertrules.yml` configuration file located in the `prometheus` directory.
+Customize Prometheus alert rules by editing the `alertrules.yml` configuration file located in the `prometheus` directory.
+
+### Add alert Receivers 
+Customize additional alert receivers in Alertmanager by editing the `alertmanager.yml` file located in the `alertmanager` directory.
 
 ### Add Grafana Dashboards
-To add a new Grafana dashboard, place the JSON file in the `monitoring-system-compose/grafana/dashboards/` directory.
+To permanently add a new Grafana dashboard, place the corresponding JSON file in the monitoring-system-compose/grafana/dashboards/ directory. Alternatively, you can import a dashboard temporarily (until the service reboots) through the Grafana UI.
+

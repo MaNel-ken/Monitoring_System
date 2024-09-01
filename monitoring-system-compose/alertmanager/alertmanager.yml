@@ -1,12 +1,17 @@
 global:
+  # Time to wait before an alert is considered resolved after it stops firing
   resolve_timeout: 2m
   
 route:
+  # Default route that sends all alerts to the 'webhook_receiver'
   receiver: webhook_receiver
   
 receivers:
     - name: webhook_receiver
+    # Configures the webhook receiver
       webhook_configs:
+        # Configures the webhook receiver
         - url: 'https://webhook.site/5a29fcd5-c106-4239-b39f-06de11f74cbd'
+          # Only send alerts when they are firing; do not send resolved alerts
           send_resolved: false
 

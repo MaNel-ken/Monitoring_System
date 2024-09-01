@@ -1,20 +1,23 @@
 global:
+  # How often to scrape targets (default). This is the default interval for all scrape jobs.
   scrape_interval: 10s
+  # How often to evaluate the rules (default). Prometheus evaluates alerting and recording rules at this interval.
   evaluation_interval: 10s
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-            - "alertmanager:9093" 
+            - "alertmanager:9093" # Address of the Alertmanager instance to send alerts to
 rule_files:
-  - alertrules.yml
+  - alertrules.yml   # File that contains alerting and recording rules
 
 scrape_configs:
   - job_name: 'prometheus_metrics'
-    scrape_interval: 5s
+    scrape_interval: 5s   # How often to scrape this target (overrides global setting)
     static_configs:
       - targets: ['localhost:9090']
+
   - job_name: 'node_exporter_metrics'
     scrape_interval: 5s
     static_configs:

@@ -1,25 +1,28 @@
 groups:
-- name: test
+- name: test # Name of the alerting group
   rules:
-  - alert: InstanceDown
-    expr: up == 0
-    for: 1m
+  - alert: InstanceDown  # Name of the alert
+    expr: up == 0  # Expression to trigger the alert when an instance is down (up metric equals 0)
+    for: 1m  # Alert is triggered if the condition is met for 1 minute
     
 - name: HighCPUUsage
   rules:
   - alert: HighCpuUsage
     expr: sum by(instance)(irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100 < 10
+    # Expression to trigger the alert when CPU idle time is less than 10% over the last 5 minutes, indicating high CPU usage
     for: 1m
     labels:
-      severity: warning
+      severity: warning  # Label indicating the severity of the alert
     annotations:
-      summary: High CPU usage detected
+      summary: High CPU usage detected  # Brief summary of the alert
       description: "CPU usage on instance {{ $labels.instance }} has been above 90% for the last 5 minute."
-      
+      # Detailed description of the alert with the instance label placeholder
+
 - name: HighMemoryUsage
   rules:
   - alert: HighMemoryUsage
     expr: sum(container_memory_usage_bytes) by (namespace) > 90 * 1024 * 1024 * 1024
+    # Expression to trigger the alert when memory usage in a namespace exceeds 90 GB
     for: 1m
     labels:
       severity: warning
@@ -31,6 +34,7 @@ groups:
   rules:
   - alert: HighStorageUsage
     expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.9
+    # Expression to trigger the alert when storage usage exceeds 90% of the total filesystem size
     for: 1m
     labels:
       severity: warning

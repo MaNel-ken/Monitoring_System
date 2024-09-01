@@ -1,8 +1,8 @@
 groups:
-- name: test # Name of the alerting group
+- name: InstanceDown # Name of the alerting group
   rules:
   - alert: InstanceDown  # Name of the alert
-    expr: up == 0  # Expression to trigger the alert when an instance is down (up metric equals 0)
+    expr: up{instance="nginx-prometheus-exporter:9113"} == 0  # Expression to trigger the alert when an instance is down (up metric equals 0)
     for: 1m  # Alert is triggered if the condition is met for 1 minute
     
 - name: HighCPUUsage

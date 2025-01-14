@@ -2,12 +2,11 @@ services:
 
   nginx:
     image: nginx:1.25.3-alpine3.18
-    conatiner_name: nginx
-    restart: always
+    restart: always # Ensures the container automatically restarts if it stops.
     volumes: 
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/status.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/status.conf  # Mounts a custom NGINX config file to expose a status endpoint.
     networks:
-      - monitor
+      - monitor # Connects the NGINX service to the "monitor" network for communication with other services.
     ports:
       - 80:80
       - 8080:8080
@@ -18,14 +17,14 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/alertrules.yml:/etc/prometheus/alertrules.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Mounts the Prometheus configuration file.
+      - ./prometheus/alertrules.yml:/etc/prometheus/alertrules.yml # Mounts alerting rules for Prometheus.
     command:
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=7d'
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--storage.tsdb.path=/prometheus' # Sets the path for storing time-series data.
+      - '--storage.tsdb.retention.time=7d' # Configures data retention for 7 days.
+      - '--config.file=/etc/prometheus/prometheus.yml' # Specifies the config file location.
+      - '--web.console.templates=/etc/prometheus/consoles' # Sets the path for console templates.
+      - '--web.console.libraries=/etc/prometheus/console_libraries' # Sets the path for console libraries.
     restart: always
     networks:
       - monitor
@@ -36,11 +35,11 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - prometheus
+      - prometheus # Ensures Prometheus starts before Grafana.
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning # Mounts provisioning files for Grafana setup.
+      - ./grafana/dashboards:/var/lib/grafana/dashboards # Mounts custom Grafana dashboards.
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini # Mounts Grafana configuration.
     restart: always
     networks:
       - monitor
@@ -60,9 +59,9 @@ services:
     ports:
       - 9093:9093
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml # Mounts the Alertmanager configuration file.
     command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --config.file=/etc/alertmanager/alertmanager.yml  # Specifies the Alertmanager configuration file.
     restart: always
     networks:
       - monitor
@@ -72,15 +71,15 @@ services:
     container_name: prometheus-nginx-exporter
     restart: always
     command:
-      - -nginx.scrape-uri=https://nginx:8080/stub_status
+      - -nginx.scrape-uri=http://nginx:8080/stub_status # Configures the exporter to scrape NGINX metrics from the status endpoint.
     ports: 
       - 9113:9113
     networks:
       - monitor
     depends_on:
-      - prometheus
+      - prometheus # Ensures Prometheus starts before the exporter.
 
 networks:
   monitor:  
-    driver: bridge
+    driver: bridge # Creates a bridge network named "monitor" for inter-service communication.
 

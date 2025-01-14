@@ -11,7 +11,7 @@ receivers:
     # Configures the webhook receiver
       webhook_configs:
         # Configures the webhook receiver
-        - url: 'https://webhook.site/5a29fcd5-c106-4239-b39f-06de11f74cbd'
+        - url: 'https://webhook.site/c54e4e5d-cc6d-43b6-97dc-7630de22177f'
           # Only send alerts when they are firing; do not send resolved alerts
           send_resolved: false
 

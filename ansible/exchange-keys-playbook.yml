@@ -4,4 +4,5 @@
   - name: add ansible ssh public key to authorized_keys file of all remote hosts
     lineinfile:
       path: "/home/vagrant/.ssh/authorized_keys"
-      line: "{{ lookup('file', '/home/vagrant/.ssh/id_rsa.pub') }}"
+      line: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+

@@ -1,6 +1,8 @@
 # Monitoring System
 This project demonstrates a DevOps monitoring system that leverages Vagrant, Ansible, and Docker Compose to automate the deployment of a monitoring stack which includes Prometheus, Grafana, and Alertmanager. The system is designed to monitor a sample NGINX application and provide real-time insights into its performance.
 
+![alt text](iamges/Monitoring-system.png)
+
 ## Prerequisites
 Before setting up the monitoring system, ensure the following tools are installed on your local machine:
 
@@ -65,20 +67,27 @@ Verify that all services are up and running with the following command:
 ```bash
 $ docker compose ps
 ```
+![alt text](images/docker-ps.png)
 
 ## Verification and Testing
 1. Access Grafana: 
 - Navigate to http://<monitoring_vm_ip>:3000 to access Grafana and log in with the default credentials (`admin`:`admin`). 
 
-![alt text]()
+![alt text](images/)
 
-- Once logged in, you will see two pre-configured dashboards that were mounted in the dashboard directory when the container was created.
+- Once logged in, you will see two pre-configured dashboards that were mounted in the dashboard directory when the container was created:
 
-![alt text]()
+A dashboard for monitoring overall system metrics collected by `Prometheus`.
+![alt text](images/grafana-dashboard1.png)
+![alt text](images/grafana-dashboard2.png)
+A dashboard for monitoring NGINX metrics collected by the `NGINX exporter`.  
+![alt text](images/grafana-dashboard3.png)
+
+Grafana offers a wide range of `pre-built dashboards` that can be imported based on what you want to monitor. You can browse and download these dashboards from the official [Grafana Dashboard Library](https://grafana.com/grafana/dashboards).  
 
 2. View Prometheus Metrics: 
 - Visit http://<monitoring_vm_ip>:9090 to access Prometheus and explore the metrics collected:
-![alt text]()
+![alt text](images/prometheus-metrics.png)
 
 - Review the targets and alerts that have been configured.
 
@@ -97,20 +106,22 @@ Visit http://<monitoring_vm_ip>:80 to access Nginx webpage.
 ```bash
 $ docker compose pause nginx
 ```
+- Grafana Dashboard Update: after few second we can see that service is down in dashboard status.
+![alt text](images/grfana-dashboard-alert.png)
+
 - Pending status of the alert:
 ![alt text]()
 
-- After 1min, Firing status:
+- After 1min, prometheus Fires the alert:
 ![alt text]()
 
 - Alertmanager Receiving the Alert:
-![alt text]()
+![alt text](images/alertmanager-alert.png)
 
 - Webhook Notification:
-![alt text]()
+![alt text](webhook-alert.png)
 
-- Grafana Dashboard Update:
-![alt text]()
+
 
 ## Troubleshooting
 ### Issue: Can't ssh to the VM

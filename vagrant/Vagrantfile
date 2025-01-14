@@ -1,0 +1,31 @@
+$script = <<-'SCRIPT'
+sudo apt update
+sudo apt install ansible sshpass -y
+
+# Enable SSH password authentication and ensure pubkey authentication is enabled
+sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo sed -i 's/^#PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+
+# Restart SSH service to apply changes
+sudo systemctl restart ssh
+SCRIPT
+
+
+
+
+Vagrant.configure("2") do |config|
+  config.ssh.insert_key = false
+  config.vm.define "node" do |subconfig|
+   subconfig.vm.box_download_insecure = true
+   subconfig.vm.box = "ubuntu/bionic64"
+   subconfig.vm.network "public_network", ip: "192.168.1.40", bridge: "wlp2s0"
+   subconfig.vm.hostname = "ms-machine"
+   subconfig.vm.provider "virtualbox" do |v|
+      v.name= "ms-machine"
+      v.memory = 2048
+      v.cpus = 1
+      v.gui = true
+    end
+    subconfig.vm.provision "shell", inline: $script
+  end
+end

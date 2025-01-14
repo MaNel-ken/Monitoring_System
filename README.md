@@ -1,59 +1,70 @@
 # Monitoring System
-This project demonstrates a DevOps monitoring system that leverages Terraform, Ansible, and Docker Compose to automate the deployment of monitoring services such as Prometheus, Grafana, and Alertmanager. The system is designed to monitor a sample NGINX application and provide real-time insights into its performance.
+This project demonstrates a DevOps monitoring system that leverages Vagrant, Ansible, and Docker Compose to automate the deployment of a monitoring stack which includes Prometheus, Grafana, and Alertmanager. The system is designed to monitor a sample NGINX application and provide real-time insights into its performance.
 
 ## Prerequisites
 Before setting up the monitoring system, ensure the following tools are installed on your local machine:
 
-- Terraform: Used to provision virtual machines (VMs).
+- Vagrant: Provisions virtual machines (VMs) on local hypervisors. Alternatively, Terraform can be used to provision VMs on remote platforms like Proxmox or cloud providers.
+- Ansible: Configures the target VM(s).
 - VirtualBox: Hypervisor for running the VMs.
 > Ensure the VirtualBox path is added to your system's environment variables.
-- Git: For cloning the repository.
+- Git: clones the repository.
 
-## Step 1: Provision VMs using Terraform
-- Copy the Terraform Files:\
-Copy the main.tf file from the Terraform directory to your local machine.
-
-- Initialize and apply terrafrom configuration:
-```bash
-$ cd terraform
-$ terraform init
-$ terraform plan # to Review the Terraform plan
-$ terraform apply --auto-approve # Apply the Terraform configuration to provision the VMs 
-```
-> This step provisions two VMs: one as the Ansible controller and another for hosting the monitoring system.
-
-
-## Step 2: Apply Ansible Playbooks
+## Step 0: Clone the repository
 - Clone the Repository:
 ```bash
-$ git clone https://github.com/your-repo/monitoring-system.git
+$ git clone https://github.com/MaNel-ken/Monitoring_System.git
 $ cd Monitoring_System
 ```
-- Install Ansible on the 1st VM:
+## Step 1: Provision VMs using Terraform
+- Vagrantfile Setup:\
+Navigate to the Vagrant file and adjust the public address assigned to the VM.
+```bash
+$ cd vagrant
+```
+
+- Provision the VM:\
+Run the following commands to create, configure, and start the VM:
+```bash
+$ vagrant up
+```
+
+## Step 2: Configure VM using Ansible Playbooks
+
+- Inventory File: \
+Update the inventory file with the IP address of the monitoring system VM (the Ansible agent):
+```ini
+[DockerCompose]
+node ansible_host= <ip_address_MS_VM>
+```
+
+- Set Up Ansible on the Local Host:\
+Configure the local machine as an Ansible controller. Run the setup script to install Ansible, generate SSH keys, exchange the public key with the target VM, and verify the connection:
 ```bash
 $ cd ansible
 $ ./setup_ansible.sh
 ```
-- Update the Inventory File: Modify the inventory file to include the IP address of the monitoring system VM.
+- Ansible playbook:\
+Run the Ansible playbook to install the necessary packages ansible agent and deploy the Monitoring Services.
+> Use the -i option to specify the inventory file 
+>aUse the -u option to define the remote user. In this case, the user is vagrant, as the VM is provisioned using a Vagrant box:
 ```bash
-[DockerCompose]
-node ansible_host= <ip_address_MS_VM>
+$ ansible-playbook  package_installation_runnning_compose.yml -i inventory -u vagrant
 ```
-- Run the Ansible playbook to install necessary packages on the other VM:
-```bash
-$ ansible-playbook  package_instal_compose_node.yml -i inventory -u vagrant --ask-pass
-```
+> Outcome: Once the playbook completes successfully:\
+
+All services—Prometheus, Grafana, Alertmanager, and the sample NGINX server—will be running.
+
 ## Step 3: Deploy Monitoring Services with Docker Compose
 - SSH into the monitoring VM:
 ```bash
 $ ssh vagrant@monitoring_vm_ip 
 ```
-- Run docker compose services:
+- Check Running Services: \
+Verify that all services are up and running with the following command:
 ```bash
-$ cd monitoring-system
-$ docker compose up -d
+$ docker compose ps
 ```
-> This command will start Prometheus, Grafana, Alertmanager, and the sample NGINX server.
 
 ## Verification and Testing
 1. Access Grafana: 
@@ -81,7 +92,7 @@ Visit http://<monitoring_vm_ip>:80 to access Nginx webpage.
 ![alt text]()
 
 4. Test Alerts: 
-- To test the alerting system, you can trigger an alert by stopping the NGINX instance. This will cause Prometheus to fire an alert after 1 minute and notify Alertmanager.
+- To test the alerting system, we trigger an alert by stopping the NGINX instance. This will cause Prometheus to fire an alert after 1 minute and notify Alertmanager.
 
 ```bash
 $ docker compose pause nginx
@@ -170,5 +181,5 @@ Customize Prometheus alert rules by editing the `alertrules.yml` configuration f
 Customize additional alert receivers in Alertmanager by editing the `alertmanager.yml` file located in the `alertmanager` directory.
 
 ### Add Grafana Dashboards
-To permanently add a new Grafana dashboard, place the corresponding JSON file in the monitoring-system-compose/grafana/dashboards/ directory. Alternatively, you can import a dashboard temporarily (until the service reboots) through the Grafana UI.
+To permanently add a new Grafana dashboard, place the corresponding JSON file in the `monitoring-system-compose/grafana/dashboards/` directory. Alternatively, you can import a dashboard temporarily (until the service reboots) through the Grafana UI.
 

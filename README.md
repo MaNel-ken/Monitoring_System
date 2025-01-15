@@ -88,7 +88,7 @@ Grafana offers a wide range of `pre-built dashboards` that can be imported based
 
 - Review the targets and alerts that have been configured.
 
-![alt text](images/prometheus-tergets.png)
+![alt text](images/prometheus-targets.png)
 
 ![alt text](images/prometheus-alerts.png)
 
@@ -104,7 +104,7 @@ Visit http://<monitoring_vm_ip>:80 to access Nginx webpage.
 $ docker compose pause nginx
 ```
 - Grafana Dashboard Update: after few second we can see that service is down in dashboard status.
-![alt text](images/grfana-dashboard-alert.png)
+![alt text](images/grafana-dashboard-alert.png)
 
 - Pending status of the alert:
 ![alt text](images/pending-alert.png)

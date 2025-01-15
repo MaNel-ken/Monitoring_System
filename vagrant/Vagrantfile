@@ -1,18 +1,3 @@
-$script = <<-'SCRIPT'
-sudo apt update
-sudo apt install ansible sshpass -y
-
-# Enable SSH password authentication and ensure pubkey authentication is enabled
-sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sudo sed -i 's/^#PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-
-# Restart SSH service to apply changes
-sudo systemctl restart ssh
-SCRIPT
-
-
-
-
 Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   config.vm.define "node" do |subconfig|
@@ -26,6 +11,21 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
       v.gui = true
     end
-    subconfig.vm.provision "shell", inline: $script
+    subconfig.vm.provision "shell" do |s|
+      ssh_pub_key_path = "#{Dir.home}/.ssh/id_rsa.pub"
+      print "Checking if SSH key exist in host... \n"
+      # Check if the SSH public key exists, and create it if it doesn't
+      unless File.exist?(ssh_pub_key_path)
+        print " ==> Generating SSH key... \n"
+        system("ssh-keygen -t rsa -f #{Dir.home}/.ssh/id_rsa -N ''")
+      end
+      ssh_pub_key = File.readlines(ssh_pub_key_path).first.strip
+      s.inline = <<-SHELL
+       sudo apt update  
+       sudo apt install ansible sshpass -y
+       echo -e "Add host public SSH key to guest authorized keys... \n"
+       echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+      SHELL
+    end
   end
 end

@@ -25,7 +25,7 @@ Navigate to the Vagrant file and adjust the public address assigned to the VM.
 $ cd vagrant
 ```
 
-- Provision the VM:\
+- Provision the VM:
 ```bash
 $ vagrant up
 ```
@@ -52,7 +52,7 @@ Run the Ansible playbook to install the necessary packages ansible agent and dep
 ```bash
 $ ansible-playbook  package_installation_runnning_compose.yml
 ```
-> Outcome: Once the playbook completes successfully:\
+Outcome: Once the playbook completes successfully:\
 
 All services—Prometheus, Grafana, Alertmanager, and the sample NGINX server—will be running.
 

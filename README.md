@@ -52,7 +52,7 @@ Run the Ansible playbook to install the necessary packages ansible agent and dep
 ```bash
 $ ansible-playbook  package_installation_runnning_compose.yml
 ```
-Outcome: Once the playbook completes successfully:\
+Outcome: Once the playbook completes successfully:
 
 All services—Prometheus, Grafana, Alertmanager, and the sample NGINX server—will be running.
 
@@ -72,9 +72,7 @@ $ docker ps
 1. Access Grafana: 
 - Navigate to http://<monitoring_vm_ip>:3000 to access Grafana and log in with the default credentials (`admin`:`admin`). 
 
-![alt text](images/)
-
-- Once logged in, you will see two pre-configured dashboards that were mounted in the dashboard directory when the container was created:
+Once logged in, you will see two pre-configured dashboards that were mounted in the dashboard directory when the container was created:
 
 A dashboard for monitoring overall system metrics collected by `Prometheus`.
 ![alt text](images/grafana-dashboard1.png)
@@ -90,14 +88,14 @@ Grafana offers a wide range of `pre-built dashboards` that can be imported based
 
 - Review the targets and alerts that have been configured.
 
-![alt text]()
+![alt text](images/prometheus-tergets.png)
 
-![alt text]()
+![alt text](images/prometheus-alerts.png)
 
 3. View Nginx webpage:
 Visit http://<monitoring_vm_ip>:80 to access Nginx webpage.
 
-![alt text]()
+![alt text](images/nginx.png)
 
 4. Test Alerts: 
 - To test the alerting system, we trigger an alert by stopping the NGINX instance. This will cause Prometheus to fire an alert after 1 minute and notify Alertmanager.
@@ -109,10 +107,10 @@ $ docker compose pause nginx
 ![alt text](images/grfana-dashboard-alert.png)
 
 - Pending status of the alert:
-![alt text]()
+![alt text](images/pending-alert.png)
 
 - After 1min, prometheus Fires the alert:
-![alt text]()
+![alt text](images/firing-alert.png)
 
 - Alertmanager Receiving the Alert:
 ![alt text](images/alertmanager-alert.png)

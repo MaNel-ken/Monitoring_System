@@ -1,7 +1,7 @@
 # Monitoring System
 This project demonstrates a DevOps monitoring system that leverages Vagrant, Ansible, and Docker Compose to automate the deployment of a monitoring stack which includes Prometheus, Grafana, and Alertmanager. The system is designed to monitor a sample NGINX application and provide real-time insights into its performance.
 
-![alt text](iamges/Monitoring-system.png)
+![alt text](images/Monitoring-system.png)
 
 ## Prerequisites
 Before setting up the monitoring system, ensure the following tools are installed on your local machine:
@@ -18,7 +18,7 @@ Before setting up the monitoring system, ensure the following tools are installe
 $ git clone https://github.com/MaNel-ken/Monitoring_System.git
 $ cd Monitoring_System
 ```
-## Step 1: Provision VMs using Terraform
+## Step 1: Provision VMs using 	Vagrant
 - Vagrantfile Setup:\
 Navigate to the Vagrant file and adjust the public address assigned to the VM.
 ```bash
@@ -26,10 +26,10 @@ $ cd vagrant
 ```
 
 - Provision the VM:\
-Run the following commands to create, configure, and start the VM:
 ```bash
 $ vagrant up
 ```
+The `Vagrantfile` first runs a script on the host to check if the SSH key exists. If it doesn’t, the script generates a new key pair. After that, the VM is provisioned and started, during which Ansible is installed on the guest, and the host's public SSH key is added to the guest's `authorized_keys` file, enabling passwordless SSH communication between the host and the guest.
 
 ## Step 2: Configure VM using Ansible Playbooks
 
@@ -41,17 +41,16 @@ node ansible_host= <ip_address_MS_VM>
 ```
 
 - Set Up Ansible on the Local Host:\
-Configure the local machine as an Ansible controller. Run the setup script to install Ansible, generate SSH keys, exchange the public key with the target VM, and verify the connection:
+Configure the local machine as an Ansible controller. Run the setup script to install Ansible and verify the connection:
 ```bash
-$ cd ansible
+$ cd ../ansible
+$ chmod +x setup_ansible.sh
 $ ./setup_ansible.sh
 ```
 - Ansible playbook:\
 Run the Ansible playbook to install the necessary packages ansible agent and deploy the Monitoring Services.
-> Use the -i option to specify the inventory file 
->aUse the -u option to define the remote user. In this case, the user is vagrant, as the VM is provisioned using a Vagrant box:
 ```bash
-$ ansible-playbook  package_installation_runnning_compose.yml -i inventory -u vagrant
+$ ansible-playbook  package_installation_runnning_compose.yml
 ```
 > Outcome: Once the playbook completes successfully:\
 
@@ -65,7 +64,7 @@ $ ssh vagrant@monitoring_vm_ip
 - Check Running Services: \
 Verify that all services are up and running with the following command:
 ```bash
-$ docker compose ps
+$ docker ps
 ```
 ![alt text](images/docker-ps.png)
 
@@ -119,7 +118,7 @@ $ docker compose pause nginx
 ![alt text](images/alertmanager-alert.png)
 
 - Webhook Notification:
-![alt text](webhook-alert.png)
+![alt text](images/webhook-alert.png)
 
 
 

@@ -1,8 +1,0 @@
----
-- hosts: all
-  tasks:
-  - name: add ansible ssh public key to authorized_keys file of all remote hosts
-    lineinfile:
-      path: "/home/vagrant/.ssh/authorized_keys"
-      line: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
-

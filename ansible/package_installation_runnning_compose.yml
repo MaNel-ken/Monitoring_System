@@ -2,6 +2,7 @@
 - hosts: DockerCompose
   become: true
   tasks:
+
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -57,10 +58,21 @@
     notify:
       - docker status
 
+  - name: Create Docker group
+    group:
+      name: docker
+      state: present
+
   - name: Add vagrant user to docker group
     user:
       name: vagrant
       group: docker
+
+  - name: Start and enable Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
 
   - name: Copy monitoring-system-compose directory from ansible controller
     copy:
@@ -68,14 +80,13 @@
       dest: monitoring-system-compose/
 
   - name: Start monitoring system with Docker Compose
-    command: docker compose up -d
-    args:
-      chdir: ./monitoring-system-compose
-  register: compose_output
-  ignore_errors: false
-  tags: start_docker_compose
+    community.docker.docker_compose_v2:
+      project_src: monitoring-system-compose
+      state: present
+    register: output
 
-      
   handlers:
     - name: docker status
       service: name=docker state=started
+
+
